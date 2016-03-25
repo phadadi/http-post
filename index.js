@@ -63,9 +63,10 @@ module.exports = function(options, data, files, fn) {
 		}
 
 		contentType = 'multipart/form-data; boundary=' + boundary;
-	}
-	else {
-		data = require('querystring').stringify(data);
+	} else {
+		if (typeof data === 'object') {
+			data = require('querystring').stringify(data);
+		}
 
 		length = data.length;
 		contentType = 'application/x-www-form-urlencoded';
@@ -77,8 +78,8 @@ module.exports = function(options, data, files, fn) {
 		'Content-Length': length
 	};
 
-	var req = require('http').request(options, function(responce) {
-		fn(responce);
+	var req = require('http').request(options, function(response) {
+		fn(response);
 	});
 
 	// Multipart and form-urlencded work slightly differnetly for sending
@@ -93,8 +94,7 @@ module.exports = function(options, data, files, fn) {
 				req.write(endl);
 			}
 		}
-	}
-	else {
+	} else {
 		req.write(data);
 	}
 	req.end();
